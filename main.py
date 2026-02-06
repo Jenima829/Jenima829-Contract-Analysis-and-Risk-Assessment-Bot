@@ -1,6 +1,16 @@
 # ============================================================
 # 📦 IMPORTS
 # ============================================================
+import streamlit as st
+
+st.set_page_config(
+    page_title="Contract Analysis Bot",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+with st.spinner("⏳ Initializing AI models... Please wait"):
+    from nlp.preprocessing import preprocess_text
+
 
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -231,3 +241,4 @@ if files:
     df = pd.DataFrame(comparison_data)
     st.dataframe(df, use_container_width=True)
     st.bar_chart(df.set_index("Contract"))
+
