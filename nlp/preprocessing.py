@@ -7,7 +7,6 @@ import nltk
 from nltk.corpus import stopwords
 from indic_transliteration import sanscript
 from indic_transliteration.sanscript import transliterate
-from spacy.cli import download
 
 
 # ---------------- NLTK SETUP ---------------- #
@@ -17,13 +16,14 @@ stop_words = set(stopwords.words("english"))
 
 
 # ---------------- SPACY SAFE LOADER ---------------- #
+# IMPORTANT: No downloads at runtime (Streamlit-safe)
 
 def load_spacy_model():
     try:
         return spacy.load("en_core_web_sm")
     except OSError:
-        download("en_core_web_sm")
-        return spacy.load("en_core_web_sm")
+        # Fallback if model is unavailable
+        return spacy.blank("en")
 
 
 nlp = load_spacy_model()
