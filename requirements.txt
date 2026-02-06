@@ -1,0 +1,11 @@
+streamlit
+spacy
+pdfplumber
+python-docx
+fpdf
+openai
+indic-transliteration
+nltk
+sentence-transformers
+reportlab
+matplotlib
