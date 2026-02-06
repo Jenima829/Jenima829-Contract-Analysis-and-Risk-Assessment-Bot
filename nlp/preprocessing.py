@@ -7,82 +7,68 @@ import nltk
 from nltk.corpus import stopwords
 from indic_transliteration import sanscript
 from indic_transliteration.sanscript import transliterate
+from spacy.cli import download
 
 
-# Download stopwords (first time only)
+# ---------------- NLTK SETUP ---------------- #
+
 nltk.download("stopwords")
-
 stop_words = set(stopwords.words("english"))
 
-# Load spaCy model
-nlp = spacy.load("en_core_web_sm")
+
+# ---------------- SPACY SAFE LOADER ---------------- #
+
+def load_spacy_model():
+    try:
+        return spacy.load("en_core_web_sm")
+    except OSError:
+        download("en_core_web_sm")
+        return spacy.load("en_core_web_sm")
+
+
+nlp = load_spacy_model()
 
 
 # ---------------- TEXT CLEANING ---------------- #
 
 def clean_text(text):
-
-    # Lowercase
     text = text.lower()
-
-    # Remove special characters
     text = re.sub(r"[^a-zA-Z0-9\s₹]", " ", text)
-
-    # Remove extra spaces
     text = re.sub(r"\s+", " ", text)
-
-    return text
+    return text.strip()
 
 
 # ---------------- STOPWORD REMOVAL ---------------- #
 
 def remove_stopwords(text):
-
     tokens = text.split()
-
-    filtered = [
-        word for word in tokens
-        if word not in stop_words
-    ]
-
+    filtered = [word for word in tokens if word not in stop_words]
     return " ".join(filtered)
 
 
 # ---------------- LEMMATIZATION ---------------- #
 
 def lemmatize_text(text):
-
     doc = nlp(text)
-
-    lemmas = [
-        token.lemma_
-        for token in doc
-    ]
-
-    return " ".join(lemmas)
+    return " ".join(token.lemma_ for token in doc)
 
 
 # ---------------- HINDI NORMALIZATION ---------------- #
-# Basic transliteration Hindi → English script
 
 def normalize_hindi(text):
-
     try:
-        normalized = transliterate(
+        return transliterate(
             text,
             sanscript.DEVANAGARI,
             sanscript.ITRANS
         )
-        return normalized
-
-    except:
+    except Exception:
         return text
 
 
 # ---------------- LEGAL KEYWORD NORMALIZATION ---------------- #
 
 def normalize_legal_terms(text):
-
     replacements = {
         "terminate": "termination",
         "ended": "termination",
@@ -103,13 +89,9 @@ def normalize_legal_terms(text):
 def preprocess_text(raw_text):
 
     text = normalize_hindi(raw_text)
-
     text = clean_text(text)
-
     text = remove_stopwords(text)
-
     text = lemmatize_text(text)
-
     text = normalize_legal_terms(text)
 
     return text
