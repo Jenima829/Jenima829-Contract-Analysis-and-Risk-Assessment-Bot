@@ -9,3 +9,12 @@ nltk
 sentence-transformers
 reportlab
 matplotlib
+PyPDF2
+streamlit
+pandas
+numpy
+matplotlib
+scikit-learn
+
+
+
